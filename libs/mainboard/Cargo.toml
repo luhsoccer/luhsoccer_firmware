@@ -1,0 +1,18 @@
+[package]
+name = "mainboard"
+version = "0.1.0"
+edition = "2021"
+authors = ["max <max.kaenner@luhbots.de"]
+homepage = "https://luhbots-hannover.de"
+license = "MIT"
+repository = "https://gitlab.projekt.uni-hannover.de/mzh-team_luhbots_soccer/luhsoccer_firmware.git"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+rp2040-boot2 = "0.2"
+rp2040-hal = { version = "0.7", features = ["rt", "defmt", "rtic-monotonic", "critical-section-impl"] }
+fugit = "0.3"
+usb-device = "0.2"

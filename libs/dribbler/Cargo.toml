@@ -1,0 +1,16 @@
+[package]
+name = "dribbler"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+embedded-hal = "0.2"
+rp2040-hal = "0.7"
+pio = "0.2"
+fugit = "0.3"
+defmt = "0.3"
+
+units = { path = "../units", default-features = false, features = ["fixed"] }
+fixed = { version = "1.2", features = ["num-traits"] }

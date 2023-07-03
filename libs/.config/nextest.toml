@@ -1,0 +1,6 @@
+[profile.ci.junit]
+path = "junit.xml"
+
+[profile.ci]
+failure-output = "final"
+fail-fast = false

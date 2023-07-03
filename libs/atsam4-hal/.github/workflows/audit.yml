@@ -1,0 +1,67 @@
+name: "Audit Dependencies"
+on:
+  push:
+    paths:
+      # Run if workflow changes
+      - '.github/workflows/audit.yml'
+      # Run on changed dependencies
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      # Run if the configuration file changes
+      - '**/audit.toml'
+  # Rerun periodicly to pick up new advisories
+  schedule:
+    - cron: '0 0 * * *'
+  # Run manually
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions-rust-lang/audit@v1
+        name: Audit Rust Dependencies
+
+  deny:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo-binstall
+        run: |
+          mkdir -p ~/.cargo/bin
+          wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
+          tar xf cargo-binstall*.tgz -C ~/.cargo/bin
+      - run: cargo binstall --no-confirm cargo-deny
+      - name: Cargo Deny
+        run: cargo deny check licenses
+
+  pants:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo-binstall
+        run: |
+          mkdir -p ~/.cargo/bin
+          wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
+          tar xf cargo-binstall*.tgz -C ~/.cargo/bin
+      - run: cargo binstall --no-confirm cargo-pants
+      - name: Cargo Pants
+        run: cargo pants

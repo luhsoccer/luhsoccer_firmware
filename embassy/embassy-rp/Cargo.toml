@@ -1,0 +1,89 @@
+[package]
+name = "embassy-rp"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[package.metadata.embassy_docs]
+src_base = "https://github.com/embassy-rs/embassy/blob/embassy-rp-v$VERSION/embassy-rp/src/"
+src_base_git = "https://github.com/embassy-rs/embassy/blob/$COMMIT/embassy-rp/src/"
+features = ["nightly", "defmt", "unstable-pac", "unstable-traits", "time-driver"]
+flavors = [
+    { name = "rp2040", target = "thumbv6m-none-eabi" },
+]
+
+[features]
+default = [ "rp-pac/rt" ]
+
+defmt = ["dep:defmt", "embassy-usb-driver?/defmt", "embassy-hal-common/defmt"]
+
+# critical section that is safe for multicore use
+critical-section-impl = ["critical-section/restore-state-u8"]
+
+# Reexport the PAC for the currently enabled chip at `embassy_rp::pac`.
+# This is unstable because semver-minor (non-breaking) releases of embassy-rp may major-bump (breaking) the PAC version.
+# If this is an issue for you, you're encouraged to directly depend on a fixed version of the PAC.
+# There are no plans to make this stable.
+unstable-pac = []
+
+time-driver = []
+
+rom-func-cache = []
+intrinsics = []
+rom-v2-intrinsics = []
+
+# boot2 flash chip support. if none of these is enabled we'll default to w25q080 (used on the pico)
+boot2-at25sf128a = []
+boot2-gd25q64cs = []
+boot2-generic-03h = []
+boot2-is25lp080 = []
+boot2-ram-memcpy = []
+boot2-w25q080 = []
+boot2-w25x10cl = []
+
+# Enable nightly-only features
+nightly = ["embassy-executor/nightly", "embedded-hal-1", "embedded-hal-async", "embassy-embedded-hal/nightly", "dep:embassy-usb-driver", "dep:embedded-io"]
+
+# Implement embedded-hal 1.0 alpha traits.
+# Implement embedded-hal-async traits if `nightly` is set as well.
+unstable-traits = ["embedded-hal-1", "embedded-hal-nb"]
+
+[dependencies]
+embassy-sync = { version = "0.2.0", path = "../embassy-sync" }
+embassy-executor = { version = "0.2.0", path = "../embassy-executor" }
+embassy-time = { version = "0.1.0", path = "../embassy-time", features = [ "tick-hz-1_000_000" ] }
+embassy-futures = { version = "0.1.0", path = "../embassy-futures" }
+embassy-cortex-m = { version = "0.1.0", path = "../embassy-cortex-m", features = ["prio-bits-2"]}
+embassy-hal-common = {version = "0.1.0", path = "../embassy-hal-common" }
+embassy-embedded-hal = {version = "0.1.0", path = "../embassy-embedded-hal" }
+embassy-usb-driver = {version = "0.1.0", path = "../embassy-usb-driver", optional = true }
+atomic-polyfill = "1.0.1"
+defmt = { version = "0.3", optional = true }
+log = { version = "0.4.14", optional = true }
+nb = "1.0.0"
+cfg-if = "1.0.0"
+cortex-m-rt = ">=0.6.15,<0.8"
+cortex-m = "0.7.6"
+critical-section = "1.1"
+futures = { version = "0.3.17", default-features = false, features = ["async-await"] }
+chrono = { version = "0.4", default-features = false, optional = true }
+embedded-io = { version = "0.4.0", features = ["async"], optional = true }
+embedded-storage = { version = "0.3" }
+rand_core = "0.6.4"
+fixed = "1.23.1"
+
+rp-pac = { version = "4" }
+
+embedded-hal-02 = { package = "embedded-hal", version = "0.2.6", features = ["unproven"] }
+embedded-hal-1 = { package = "embedded-hal", version = "=1.0.0-alpha.10", optional = true}
+embedded-hal-async = { version = "=0.2.0-alpha.1", optional = true}
+embedded-hal-nb = { version = "=1.0.0-alpha.2", optional = true}
+
+paste = "1.0"
+pio-proc = {version= "0.2" }
+pio = {version= "0.2.1" }
+rp2040-boot2 = "0.3"
+
+[dev-dependencies]
+embassy-executor = { version = "0.2.0", path = "../embassy-executor", features = ["arch-std", "executor-thread"] }
+static_cell = "1.1"

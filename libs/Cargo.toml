@@ -1,0 +1,19 @@
+[workspace]
+
+members = [
+  "mainboard",
+  "pidcontroller",
+  "tmc4671",
+  "tmc4671-macros",
+  "kicker",
+  "units",
+  "dribbler",
+  "intra-comms",
+  "sx1280",
+  "protobuf",
+  "bmi270",
+  "sky66112",
+  "sync",
+]
+exclude = ["atsam4-hal"]
+resolver = "2"

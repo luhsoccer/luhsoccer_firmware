@@ -1,0 +1,117 @@
+name: Rust
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mcu: [
+          # atsam4e
+          atsam4e8c, atsam4e8e, atsam4e16c, atsam4e16e,
+          # atsam4n
+          atsam4n8a, atsam4n8b, atsam4n8c,
+          atsam4n16b, atsam4n16c,
+          # atsam4s
+          atsam4s2a, atsam4s2b, atsam4s2c,
+          atsam4s4a, atsam4s4b, atsam4s4c,
+          atsam4s8b, atsam4s8c,
+          atsam4sa16b, atsam4sa16c,
+          atsam4sd16b, atsam4sd16c,
+          atsam4sd32b, atsam4sd32c,
+        ]
+
+    steps:
+      - uses: actions/checkout@v3
+        # atsam4e toolchain
+      - uses: dtolnay/rust-toolchain@stable
+        if: ${{ contains(matrix.mcu, 'atsam4e') }}
+        with:
+          targets: thumbv7em-none-eabihf
+      - uses: dtolnay/rust-toolchain@stable
+        if: ${{ contains(matrix.mcu, 'atsam4s') || contains(matrix.mcu, 'atsam4n') }}
+        with:
+          targets: thumbv7em-none-eabi
+      - name: Cargo Check (atsam4e)
+        if: ${{ contains(matrix.mcu, 'atsam4e') }}
+        run: cargo check --target thumbv7em-none-eabihf --no-default-features --features ${{ matrix.mcu }}
+      - name: Cargo Check (atsam4e,usb)
+        if: ${{ contains(matrix.mcu, 'atsam4e') }}
+        run: cargo check --target thumbv7em-none-eabihf --no-default-features --features ${{ matrix.mcu }},usb
+      - name: Cargo Check (atsam4s|atsam4n)
+        if: ${{ contains(matrix.mcu, 'atsam4s') || contains(matrix.mcu, 'atsam4n') }}
+        run: cargo check --target thumbv7em-none-eabi --no-default-features --features ${{ matrix.mcu }}
+      - name: Cargo Check (atsam4s|atsam4n,usb)
+        if: ${{ contains(matrix.mcu, 'atsam4s') || contains(matrix.mcu, 'atsam4n') }}
+        run: cargo check --target thumbv7em-none-eabi --no-default-features --features ${{ matrix.mcu }},usb
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      # Default build
+      - name: Cargo Build (default)
+        run: cargo build --target x86_64-unknown-linux-gnu
+      # USB build
+      - name: Cargo Build (usb)
+        run: cargo build --target x86_64-unknown-linux-gnu --features usb
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Cargo fmt
+        run: cargo fmt -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Cargo Clippy (default)
+        run: cargo clippy --target x86_64-unknown-linux-gnu -- -D warnings
+      # Test USB + atsam4e
+      - name: Cargo Clippy (atsam4e,usb)
+        run: cargo clippy --target x86_64-unknown-linux-gnu --features usb -- -D warnings
+      # Test USB + atsam4s
+      - name: Cargo Clippy (atsam4s,usb)
+        run: cargo clippy --no-default-features --target x86_64-unknown-linux-gnu --features atsam4sd32c,usb -- -D warnings
+
+  doc:
+    name: Doc Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cargo Doc Check
+        env:
+          RUSTDOCFLAGS: -Dwarnings
+        run: cargo doc --target x86_64-unknown-linux-gnu
+
+  udeps:
+    name: cargo-udeps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: thumbv7em-none-eabihf
+      - name: cargo-binstall
+        run: |
+          mkdir -p ~/.cargo/bin
+          wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
+          tar xf cargo-binstall*.tgz -C ~/.cargo/bin
+      - run: cargo binstall --no-confirm cargo-udeps
+      - name: Cargo Udeps
+        run: cargo udeps

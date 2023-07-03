@@ -1,0 +1,15 @@
+[package]
+name = "tmc4671-macros"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+doc = false
+
+[dependencies]
+syn = { version = "*", features = ["extra-traits"] }
+quote = "*"
+proc-macro2 = "*"

@@ -1,0 +1,154 @@
+[package]
+name = "motorcontroller"
+version = "0.2.0"
+edition = "2021"
+authors = ["max <max.kaenner@luhbots.de"]
+homepage = "https://luhbots-hannover.de"
+license = "MIT"
+repository = "https://gitlab.projekt.uni-hannover.de/mzh-team_luhbots_soccer/luhsoccer_firmware.git"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+embassy-rp = { git = "https://github.com/embassy-rs/embassy.git", rev = "f2c2536cf3d67e4e28616f631b6bdde789b15560", features = [
+  "defmt",
+  "nightly",
+  "unstable-traits",
+  "time-driver",
+  "critical-section-impl",
+  "intrinsics",
+  "rom-v2-intrinsics",
+  "boot2-w25q080",
+  "unstable-pac",
+] }
+embassy-executor = { git = "https://github.com/embassy-rs/embassy.git", rev = "f2c2536cf3d67e4e28616f631b6bdde789b15560", features = [
+  "arch-cortex-m",
+  "defmt",
+  "integrated-timers",
+  "executor-thread",
+  "executor-interrupt",
+] }
+embassy-time = { git = "https://github.com/embassy-rs/embassy.git", rev = "f2c2536cf3d67e4e28616f631b6bdde789b15560", features = [
+  "nightly",
+  "unstable-traits",
+  "defmt",
+  "defmt-timestamp-uptime",
+] }
+embassy-embedded-hal = { git = "https://github.com/embassy-rs/embassy.git", rev = "f2c2536cf3d67e4e28616f631b6bdde789b15560", features = [
+  "nightly",
+] }
+embassy-sync = { git = "https://github.com/embassy-rs/embassy.git", rev = "f2c2536cf3d67e4e28616f631b6bdde789b15560", features = [
+  "nightly",
+] }
+embassy-futures = { git = "https://github.com/embassy-rs/embassy.git", rev = "f2c2536cf3d67e4e28616f631b6bdde789b15560", features = [
+  "defmt",
+] }
+embedded-hal = "0.2"
+embedded-hal-async = "0.2.0-alpha.1"
+
+defmt = "0.3"
+defmt-rtt = "0.4"
+
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+panic-probe = "=0.3.0"
+futures-util = { version = "0.3", default-features = false, features = [
+  "async-await-macro",
+] }
+static_cell = "1.1"
+fixed = { version = "1.23", features = ["num-traits", "serde"] }
+fixed-macro = "1.2"
+az = "1.2"
+fugit = "0.3"
+cordic = "0.1"
+array-init = "2.1"
+nalgebra = { version = "0.32", default-features = false, features = [
+  "macros",
+  "nalgebra-macros",
+] }
+serde = { version = "1.0.160", default-features = false, features = [
+  "derive",
+  "serde_derive",
+] }
+embedded-io = { version = "0.4", features = ["async"] }
+crc = "3.0"
+typenum = "1.16"
+postcard = "1.0"
+
+tmc4671 = { path = "../libs/tmc4671", features = ["async"] }
+pidcontroller = { path = "../libs/pidcontroller" }
+units = { path = "../libs/units", default-features = false, features = [
+  "defmt",
+  "serde",
+  "fixed",
+] }
+intra-comms = { path = "../libs/intra-comms" }
+kicker = { path = "../libs/kicker" }
+sync = { path = "../libs/sync" }
+
+[patch.'https://github.com/embassy-rs/embassy.git']
+embassy-rp = { path = "../embassy/embassy-rp" }
+embassy-executor = { path = "../embassy/embassy-executor" }
+embassy-time = { path = "../embassy/embassy-time" }
+embassy-embedded-hal = { path = "../embassy/embassy-embedded-hal" }
+embassy-sync = { path = "../embassy/embassy-sync" }
+embassy-futures = { path = "../embassy/embassy-futures" }
+
+[features]
+lupfer = []
+
+test = ["test_kicker", "test_motors"]
+test_kicker = []
+test_motors = []
+
+# cargo build/run
+[profile.dev]
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = false
+opt-level = 3
+overflow-checks = true
+
+# cargo build/run --release
+[profile.release]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 3
+overflow-checks = false
+
+# do not optimize proc-macro crates = faster builds from scratch
+[profile.dev.build-override]
+codegen-units = 8
+debug = false
+debug-assertions = false
+opt-level = 0
+overflow-checks = false
+
+[profile.release.build-override]
+codegen-units = 8
+debug = false
+debug-assertions = false
+opt-level = 0
+overflow-checks = false
+
+# cargo test
+[profile.test]
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = false
+opt-level = 3
+overflow-checks = true
+
+# cargo test --release
+[profile.bench]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 3

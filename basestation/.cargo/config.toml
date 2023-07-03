@@ -1,0 +1,15 @@
+[build]
+target = "thumbv7em-none-eabihf"
+rustflags = [
+    "-C", "linker=flip-link",
+    "-C", "link-arg=--nmagic",
+    "-C", "link-arg=-Tlink.x",
+    "-C", "link-arg=-Tdefmt.x", 
+
+]
+
+[target.thumbv7em-none-eabihf]
+runner = "probe-run --chip ATSAM4E8C -v --speed 40000"
+
+[env]
+DEFMT_LOG = "debug"

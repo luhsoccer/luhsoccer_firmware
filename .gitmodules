@@ -1,0 +1,6 @@
+[submodule "basestation/protobuf/files"]
+	path = libs/protobuf/files
+	url = ../luhsoccer_baguette_protobuf.git
+[submodule "embassy"]
+	path = embassy
+	url = ../embassy.git

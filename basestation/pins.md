@@ -1,0 +1,45 @@
+# Pin assignments
+
+| IO-LINE | SCHEMATIC     | PERIPHERAL_SELECTION |
+|---------|---------------|----------------------|
+| PA5     | RF_CPS        | OUTPUT               |
+| PA8     | RF_ANT_SEL    | OUTPUT               |
+| PA11    | SPI_CS        | A                    |
+| PA12    | SPI_MISO      | A                    |
+| PA13    | SPI_MOSI      | A                    |
+| PA14    | SPI_SCLK      | A                    |
+| PA22    | RF_CRX        | OUTPUT               |
+| PA27    | N_RF_RESET    | OUTPUT               |
+| PA30    | NETH_RESET    | OUTPUT               |
+| PB0     | RX            | C                    |
+| PB1     | TX            | C                    |
+| PB4     | DEBUG_TDI     | SYS                  |
+| PB5     | DEBUG_TDO     | SYS                  |
+| PB6     | DEBUG_TMS     | SYS                  |
+| PB7     | DEBUG_TCK     | SYS                  |
+| PB10    | USB_DD-       | SYS                  |
+| PB11    | USB_DD+       | SYS                  |
+| PB12    | ERASE         | SYS                  |
+| PD0     | MII_GTXCK     | A                    |
+| PD1     | MII_GTXEN     | A                    |
+| PD2     | MII_GTX0      | A                    |
+| PD3     | MII_GTX1      | A                    |
+| PD4     | MII_GRXDV     | A                    |
+| PD5     | MII_GRX0      | A                    |
+| PD6     | MII_GRX1      | A                    |
+| PD7     | MII_GRXER     | A                    |
+| PD8     | MII_GMDC      | A                    |
+| PD9     | MII_GMDIO     | A                    |
+| PD10    | MII_GCRS      | A                    |
+| PD11    | MII_GRX2      | A                    |
+| PD12    | MII_GRX3      | A                    |
+| PD13    | MII_GCOL      | A                    |
+| PD14    | MII_GRXCK     | A                    |
+| PD15    | MII_GTX2      | A                    |
+| PD16    | MII_GTX3      | A                    |
+| PD17    | MII_GTXER     | A                    |
+| PD18    | RF_BUSY       | INPUT/PULLUP?        |
+| PD28    | RF_CTX        | OUTPUT               |
+| PD31    | WS2812B       | OUTPUT               |
+| TST     | DEBUG_TST     | -                    |
+| JTAGSEL | DEBUG_JTAGSEL | -                    |

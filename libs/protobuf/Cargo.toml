@@ -1,0 +1,19 @@
+[package]
+name = "protobuf"
+version = "0.0.1"
+edition = "2021"
+authors = ["Sebastian Knackstedt <sebastian.knackstedt@luhbots.de>"]
+
+[dependencies]
+prost = { version = "0.11", default-features = false, features = [
+  "prost-derive",
+] }
+defmt = "0.3"
+fixed = "1.22"
+az = "1.2"
+
+intra-comms = { path = "../../libs/intra-comms" }
+
+[build-dependencies]
+prost-build = "0.11"
+protoc-bin-vendored = "3.0.0"

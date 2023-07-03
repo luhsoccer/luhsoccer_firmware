@@ -1,0 +1,21 @@
+[package]
+name = "sx1280"
+version = "0.0.1"
+edition = "2021"
+authors = ["Sebastian Knackstedt <sebastian.knackstedt@luhbots.de>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+embedded-hal = { version = "0.2", features = ["unproven"] }
+embedded-hal-async = { version = "0.2.0-alpha.1" }
+nb = "1.0"
+defmt = "0.3"
+fugit = "0.3.6"
+cortex-m = "0.7.6"
+heapless = "0.7"
+array-init = "2.1"
+
+maybe-async-cfg = "0.2"
+
+[features]

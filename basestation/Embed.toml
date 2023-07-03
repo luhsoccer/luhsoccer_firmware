@@ -1,0 +1,30 @@
+[default.probe]
+protocol = "Swd"
+speed = 20000
+usb_vid = "03eb"
+usb_pid = "2141"
+
+[default.flashing]
+do_chip_erase = false
+
+#[default.reset]
+#enabled = true
+
+[default.general]
+chip = "ATSAM4E8C"
+connect_under_reset = false
+log_level = "INFO"
+
+[default.rtt]
+enabled = true
+up_mode = "BlockIfFull"
+channels = [
+    { up = 0, down = 0, name = "stdout", up_mode = "BlockIfFull", format = "Defmt" },
+]
+timeout = 3000
+show_timestamps = true
+log_enabled = false
+log_path = "./logs"
+
+
+[no_flash.flashing]

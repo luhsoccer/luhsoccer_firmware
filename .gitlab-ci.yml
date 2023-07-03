@@ -1,0 +1,199 @@
+image: "luhsoccer/firmware-ci:latest"
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
+stages:
+  - build
+  - test
+  - lint
+  - deploy
+
+before_script:
+  - rustc --version
+  - cargo --version
+
+build:libs-debug:
+  stage: build
+  script:
+    - cd libs
+    - cargo build --workspace --all-features --verbose
+
+build:maincontroller-debug:
+  stage: build
+  script:
+    - cd maincontroller
+    - cargo build --verbose
+
+build:motorcontroller-debug:
+  stage: build
+  script:
+    - cd motorcontroller
+    - cargo build --verbose
+
+build:basestation-debug:
+  stage: build
+  script:
+    - cd basestation
+    - cargo build --verbose
+
+build:dribblercontroller-debug:
+  stage: build
+  script:
+    - cd dribblercontroller
+    - cargo build --verbose
+
+build:libs-release:
+  stage: build
+  script:
+    - cd libs
+    - cargo build --workspace --all-features --verbose --release
+
+build:maincontroller-release:
+  stage: build
+  script:
+    - cd maincontroller
+    - cargo build --verbose --release
+
+build:motorcontroller-release:
+  stage: build
+  script:
+    - cd motorcontroller
+    - cargo build --verbose --release
+
+build:basestation-release:
+  stage: build
+  script:
+    - cd basestation
+    - cargo build --verbose --release
+
+build:dribblercontroller-release:
+  stage: build
+  script:
+    - cd dribblercontroller
+    - cargo build --verbose --release
+
+build:libs-doc:
+  stage: build
+  script:
+    - cd libs
+    - cargo doc --workspace --all-features --no-deps
+  artifacts:
+    paths:
+      - libs/target/doc/
+
+test:libs:
+  stage: test
+  variables:
+    RUSTFLAGS: "-C instrument-coverage"
+    LLVM_PROFILE_FILE: "coverage-%p-%m.profraw"
+  script:
+    - cd libs
+    - cargo llvm-cov nextest --workspace --all-features --profile ci
+    - cargo llvm-cov report --html
+    - cargo llvm-cov report --cobertura --output-path cobertura.xml
+    - cargo llvm-cov report | tail -1 | awk '{print $1" "$10}'
+    - cargo test --workspace --all-features --doc
+  coverage: /^\s*TOTAL\s*\d+.\d+\%/
+  artifacts:
+    paths:
+      - libs/target/llvm-cov/html/
+    reports:
+      junit: libs/target/nextest/ci/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: libs/cobertura.xml
+  needs: []
+
+lint:libs:
+  stage: lint
+  script:
+    - cd libs
+    - cargo clippy --workspace --all-features -- -D warnings
+  needs: []
+
+lint:maincontroller:
+  stage: lint
+  script:
+    - cd maincontroller
+    - cargo clippy -- -D warnings
+  needs: []
+
+lint:motorcontroller:
+  stage: lint
+  script:
+    - cd motorcontroller
+    - cargo clippy -- -D warnings
+  needs: []
+
+lint:basestation:
+  stage: lint
+  script:
+    - cd basestation
+    - cargo clippy -- -D warnings
+  needs: []
+
+lint:dribblercontroller:
+  stage: lint
+  script:
+    - cd dribblercontroller
+    - cargo clippy -- -D warnings
+  needs: []
+
+format:libs:
+  stage: lint
+  script:
+    - cd libs
+    - cargo fmt -- --check
+  needs: []
+
+format:maincontroller:
+  stage: lint
+  script:
+    - cd maincontroller
+    - cargo fmt -- --check
+  needs: []
+
+format:motorcontroller:
+  stage: lint
+  script:
+    - cd motorcontroller
+    - cargo fmt -- --check
+  needs: []
+
+format:basestation:
+  stage: lint
+  script:
+    - cd basestation
+    - cargo fmt -- --check
+  needs: []
+
+format:dribblercontroller:
+  stage: lint
+  script:
+    - cd dribblercontroller
+    - cargo fmt -- --check
+  needs: []
+
+pages:
+  stage: deploy
+  script:
+    - mkdir public
+    - mv libs/target/llvm-cov/html/ public/coverage
+    - mv libs/target/doc/* public
+  artifacts:
+    paths:
+      - public
+  needs:
+    - test:libs
+    - build:libs-doc
+  only:
+    - main

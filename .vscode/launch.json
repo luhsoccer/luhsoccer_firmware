@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "name": "Debug Basestation",
+            "cwd": "${workspaceFolder}",
+            "connectUnderReset": false,
+            "chip": "ATSAM4E8C",
+            "flashingConfig": {
+                "flashingEnabled": true,
+                "resetAfterFlashing": true,
+                "haltAfterReset": false
+            },
+            "rttEnabled": true,
+            "coreConfigs": [
+                {
+                    "coreIndex": 0,
+                    "programBinary": "./basestation/target/thumbv7em-none-eabihf/debug/base_station"
+                }
+            ],
+            "env": {
+                //!MODIFY (or remove)
+                "RUST_LOG": "info", // If you set this variable, check the VSCode console log window for the location of the log file.
+                "DEFMT_LOG": "trace",
+            },
+            "consoleLogLevel": "Console" //Info, Debug
+        }
+    ]
+}
